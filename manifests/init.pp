@@ -257,17 +257,17 @@ class authconfig (
       }
 
       # NIS
-      if $nis {
+      #if $nis {
 
-        if !$nisdomain {
-          fail('The nisdomain parameter is required when nis set to true')
-        }
+        #if !$nisdomain {
+        #  fail('The nisdomain parameter is required when nis set to true')
+        #}
 
-        if !$nisserver {
-          fail('The nisserver parameter is required when nis is set to true')
-        }
+        #if !$nisserver {
+        #  fail('The nisserver parameter is required when nis is set to true')
+        #}
 
-      }
+      #}
 
       $nis_flg = $nis ? {
         true    => '--enablenis',
