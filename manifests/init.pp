@@ -106,11 +106,11 @@
 #  [*mkhomedir*]
 #
 #  [*smartc*]
-#    Boolean to enable or disable SmartCard Authentication. 
+#    Boolean to enable or disable SmartCard Authentication.
 #    (Default: false)
 #
 #  [*smartcaction*]
-#    Boolean to determine SmartCard Removal Action. Values: True = Lock, False = Ignore 
+#    Boolean to determine SmartCard Removal Action. Values: True = Lock, False = Ignore
 #    (Default: false)
 #
 #  [*smartcrequire*]
@@ -139,6 +139,7 @@ class authconfig (
   $ldapserver     = undef,
   $ldapbasedn     = undef,
   $ldaploadcacert = undef,
+  $manage_sssd    = false,
   $sssd           = false,
   $sssdauth       = false,
   $locauthorize   = false,
@@ -507,25 +508,28 @@ class authconfig (
       }
 
       if $sssd {
-        # if we're using sssd, then sssd takes care of ldap connectivity.
-        # therefore, we only need the sssd packages and services, not the
-        # ldap packages and services
-        package { $authconfig::params::sssd_packages:
-          ensure => installed,
-        }
-        # sssd services must only run after the authconfig command has set
-        # up the config.
-        service { $authconfig::params::sssd_services:
-          ensure     => running,
-          enable     => true,
-          hasstatus  => true,
-          hasrestart => true,
-          require    => Exec['authconfig command'],
+        #not everyone wants this to install sssd!
+        if $manage_sssd {
+          # if we're using sssd, then sssd takes care of ldap connectivity.
+          # therefore, we only need the sssd packages and services, not the
+          # ldap packages and services
+          package { $authconfig::params::sssd_packages:
+            ensure => installed,
+          }
+          # sssd services must only run after the authconfig command has set
+          # up the config.
+          service { $authconfig::params::sssd_services:
+            ensure     => running,
+            enable     => true,
+            hasstatus  => true,
+            hasrestart => true,
+            require    => Exec['authconfig command'],
+          }
         }
       } elsif $ldap {
         package { $authconfig::params::ldap_packages:
           ensure => installed,
-        } ->
+          } ->
         service { $authconfig::params::ldap_services:
           ensure     => running,
           enable     => true,
