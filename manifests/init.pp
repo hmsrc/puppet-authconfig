@@ -557,6 +557,7 @@ class authconfig (
           ensure => installed,
           notify => Serivce[$authconfig::params::services],
         }
+      }
       else {
         service { $authconfig::params::services:
           ensure     => running,
@@ -571,7 +572,6 @@ class authconfig (
         }
       }
     }
-  }
     default : {
       fail("${::osfamily} is not supported")
     }
