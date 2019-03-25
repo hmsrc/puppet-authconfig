@@ -172,7 +172,7 @@ class authconfig (
   $smartcaction   = false,
   $smartcrequire  = false,
   $rfc2307bis     = false,
-  $pkg_manage     = true,
+  $pkg_manage     = false,
 ) inherits authconfig::params {
 
   case $::osfamily {
@@ -555,21 +555,18 @@ class authconfig (
       if $pkg_manage {
         package { $authconfig::params::packages:
           ensure => installed,
-          notify => Serivce[$authconfig::params::services],
         }
-      }
-      else {
-        service { $authconfig::params::services:
-          ensure     => running,
-          enable     => true,
-          hasstatus  => true,
-          hasrestart => true,
-        }
-        -> exec {'authconfig command':
-          path    => ['/usr/bin', '/usr/sbin'],
-          command => $authconfig_update_cmd,
-          unless  => $exec_check_cmd,
-        }
+
+      service { $authconfig::params::services:
+        ensure     => running,
+        enable     => true,
+        hasstatus  => true,
+        hasrestart => true,
+      } ->  
+      exec {'authconfig command':
+        path    => ['/usr/bin', '/usr/sbin'],
+        command => $authconfig_update_cmd,
+        unless  => $exec_check_cmd,
       }
     }
     default : {
