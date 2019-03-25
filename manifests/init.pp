@@ -556,7 +556,7 @@ class authconfig (
         package { $authconfig::params::packages:
           ensure => installed,
         }
-
+      }
       service { $authconfig::params::services:
         ensure     => running,
         enable     => true,
